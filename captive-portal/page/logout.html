@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Logout</title>
+</head>
+
+<body>
+   <div align="center" style="color: #000; font-family: Tahoma, Verdana, Arial, Helvetica, sans-serif; font-size: 11px;">
+        <h1>Nhấn vào nút bên dưới để đăng xuất</h1>
+        <div>Client id : $CLIENTID$</div>
+        <form method="post" action="$PORTAL_ACTION$">
+            <input name="logout_id" type="hidden" value="$CLIENTID$" />
+            <input name="zone" type="hidden" value="$PORTAL_ZONE$" />
+            <input name="logout" type="submit" value="Logout" />
+        </form>
+   </div>
+    </script>
+</body>
+
+</html>
