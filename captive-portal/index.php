@@ -3,7 +3,7 @@
  * index.php
  *
  * part of pfSense (https://www.pfsense.org)
- * Copyright (c) 2004-2016 Rubicon Communications, LLC (Netgate)
+ * Copyright (c) 2004-2018 Rubicon Communications, LLC (Netgate)
  * All rights reserved.
  *
  * Originally part of m0n0wall (http://m0n0.ch/wall)
@@ -22,11 +22,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 require_once("auth.inc");
 require_once("functions.inc");
 require_once("captiveportal.inc");
-
 $errormsg = "Invalid credentials specified.";
 
 header("Expires: 0");
@@ -37,7 +35,11 @@ header("Connection: close");
 global $cpzone, $cpzoneid;
 
 $cpzone = strtolower($_REQUEST['zone']);
+if(empty($cpzone)){
+    $cpzone = "hongphi";
+}
 $cpcfg = $config['captiveportal'][$cpzone];
+
 if (empty($cpcfg)) {
 	log_error("Submission to captiveportal with unknown parameter zone: " . htmlspecialchars($cpzone));
 	portal_reply_page($redirurl, "error", $errormsg);
@@ -63,6 +65,7 @@ if (!$clientip) {
 
 $cpsession = captiveportal_isip_logged($clientip);
 $ourhostname = portal_hostname_from_client_ip($clientip);
+
 /* Automatically switching to the logout page requires a custom logout page to be present. */
 if ((!empty($cpsession)) && (! $_POST['logout_id']) && (!empty($cpcfg['page']['logouttext']))) {
 	/* if client already logged in so show logout page */
@@ -76,7 +79,8 @@ if ((!empty($cpsession)) && (! $_POST['logout_id']) && (!empty($cpcfg['page']['l
 	if (!empty($cpsession['session_terminate_time']))
 		$attributes['session_terminate_time'] = $cpsession['session_terminate_time'];
 
-	include("{$g['varetc_path']}/captiveportal-{$cpzone}-logout.html");
+	$htmlraw = file_get_contents("{$g['varetc_path']}/captiveportal-{$cpzone}-logout.html");
+    reply_logout_page($htmlraw, $clientip, $sessionid, $cpzone);
 	ob_flush();
 	return;
 } else if ($orig_host != $ourhostname) {
@@ -84,7 +88,6 @@ if ((!empty($cpsession)) && (! $_POST['logout_id']) && (!empty($cpcfg['page']['l
 	   it's connected to us. Issue a redirect... */
 	$protocol = (isset($cpcfg['httpslogin'])) ? 'https://' : 'http://';
 	header("Location: {$protocol}{$ourhostname}/index.php?zone={$cpzone}&redirurl=" . urlencode("http://{$orig_host}/{$orig_request}"));
-
 	ob_flush();
 	return;
 }
@@ -122,7 +125,6 @@ if (file_exists("{$g['vardb_path']}/captiveportal_radius_{$cpzone}.db")) {
 		$radmac_enable = TRUE;
 	}
 }
-
 /* find radius context */
 $radiusctx = 'first';
 if ($_POST['auth_user2']) {
@@ -253,9 +255,16 @@ EOD;
 
 } else {
 	/* display captive portal page */
-	portal_reply_page($redirurl, "login", null, $clientmac, $clientip);
+	portal_reply_page($redirurl, "login", null, $clientmac, $clientid);
 }
 
 ob_flush();
 
+function reply_logout_page($htmlraw, $clientip, $clientid, $portalzone){
+	$htmlraw = str_replace("\$CLIENT_IP\$", htmlspecialchars($clientip), $htmlraw);
+	$htmlraw = str_replace("\$CLIENT_ID\$", htmlspecialchars($clientid), $htmlraw);
+    $htmlraw = str_replace("\$PORTAL_ZONE\$", htmlspecialchars($portalzone), $htmlraw);
+	$htmlraw = str_replace("\$PORTAL_ACTION\$", "/", $htmlraw);
+	echo $htmlraw;
+}
 ?>
