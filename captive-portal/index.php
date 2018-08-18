@@ -79,6 +79,7 @@ if ((!empty($cpsession)) && (! $_POST['logout_id']) && (!empty($cpcfg['page']['l
 	if (!empty($cpsession['session_terminate_time']))
 		$attributes['session_terminate_time'] = $cpsession['session_terminate_time'];
 
+    //response logout page
 	$htmlraw = file_get_contents("{$g['varetc_path']}/captiveportal-{$cpzone}-logout.html");
     reply_logout_page($htmlraw, $clientip, $sessionid, $cpzone);
 	ob_flush();
@@ -259,12 +260,4 @@ EOD;
 }
 
 ob_flush();
-
-function reply_logout_page($htmlraw, $clientip, $clientid, $portalzone){
-	$htmlraw = str_replace("\$CLIENT_IP\$", htmlspecialchars($clientip), $htmlraw);
-	$htmlraw = str_replace("\$CLIENT_ID\$", htmlspecialchars($clientid), $htmlraw);
-    $htmlraw = str_replace("\$PORTAL_ZONE\$", htmlspecialchars($portalzone), $htmlraw);
-	$htmlraw = str_replace("\$PORTAL_ACTION\$", "/", $htmlraw);
-	echo $htmlraw;
-}
 ?>
