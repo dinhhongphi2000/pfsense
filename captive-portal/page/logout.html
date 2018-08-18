@@ -11,9 +11,9 @@
 <body>
    <div align="center" style="color: #000; font-family: Tahoma, Verdana, Arial, Helvetica, sans-serif; font-size: 11px;">
         <h1>Nhấn vào nút bên dưới để đăng xuất</h1>
-        <div>Client id : $CLIENTID$</div>
+        <div>Client ip : $CLIENT_IP$</div>
         <form method="post" action="$PORTAL_ACTION$">
-            <input name="logout_id" type="hidden" value="$CLIENTID$" />
+            <input name="logout_id" type="hidden" value="$CLIENT_ID$" />
             <input name="zone" type="hidden" value="$PORTAL_ZONE$" />
             <input name="logout" type="submit" value="Logout" />
         </form>
