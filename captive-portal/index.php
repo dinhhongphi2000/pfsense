@@ -62,6 +62,17 @@ if (!$clientip) {
 	ob_flush();
 	return;
 }
+/*$query = "WHERE ip = '192.168.15.101'";
+	$cpdb = captiveportal_read_db();
+	foreach ($cpdb as $cpentry) {
+        foreach($cpentry as $key => $value){
+            echo $key . ":" . $value . "<br>";
+        }
+	}
+
+echo captiveportal_get_last_activity("192.168.15.101");
+ob_flush();
+return;*/
 
 $cpsession = captiveportal_isip_logged($clientip);
 $ourhostname = portal_hostname_from_client_ip($clientip);
@@ -181,7 +192,10 @@ EOD;
 			'voucher' => 1,
 			'session_timeout' => $timecredit*60,
 			'session_terminate_time' => 0);
-		if (portal_allow($clientip, $clientmac, $voucher, null, $attr)) {
+		$loginResult = portal_allow($clientip, $clientmac, $voucher, null, $attr); 
+		if($loginResult == -1){
+		    portal_reply_page($redirurl, "error", "Vui long dang xuat hoac cho trong 3 phut moi duoc dang nhap lai");
+		}elseif($loginResult) {
 			// YES: user is good for $timecredit minutes.
 			captiveportal_logportalauth($voucher, $clientmac, $clientip, "Voucher login good for $timecredit min.");
 		} else {
