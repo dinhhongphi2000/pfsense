@@ -1,24 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Logout</title>
+    <title>Trang thai</title>
+    <link rel="stylesheet" href="captiveportal-bootstrap.min.css">
 </head>
 
 <body>
-   <div align="center" style="color: #000; font-family: Tahoma, Verdana, Arial, Helvetica, sans-serif; font-size: 11px;">
-        <h1>Nhấn vào nút bên dưới để đăng xuất</h1>
-        <div>Client ip : $CLIENT_IP$</div>
-        <form method="post" action="$PORTAL_ACTION$">
-            <input name="logout_id" type="hidden" value="$CLIENT_ID$" />
-            <input name="zone" type="hidden" value="$PORTAL_ZONE$" />
-            <input name="logout" type="submit" value="Logout" />
-        </form>
-   </div>
-    </script>
+	<div class="container">
+		<div class="row justify-content-md-center">
+			<div class="col-md-6">
+				<div class="card">
+	  				<div class="card-body">
+				        <h1 class="text-justify">Nha tro dao manh hong</h1>
+				        <h4>Nhấn vào nút bên dưới để đăng xuất</h4>
+						<h4>Client ip : $CLIENT_IP$</h4>
+						<h4>Thoi gian su dung con lai: $DAY_REMAIN$ ngay, $HOUR_REMAIN$ gio, $MINUTE_REMAIN$ phut</h4>
+						<form method="post" action="$PORTAL_ACTION$">
+							<input name="logout_id" type="hidden" value="$CLIENT_ID$" />
+							<input name="zone" type="hidden" value="$PORTAL_ZONE$" />
+							<input name="logout" type="submit" value="Logout" />
+						</form>
+				    </div>
+					<div class="card-footer">Neu gap su co vui long phan anh voi chu nha</div>
+				</div>
+			</div>
+		</div>
+	  
+	</div>
+    <script src="captiveportal-jquery.min.js" type="text/javascript"></script>
+    <script src="captiveportal-bootstrap.min.js" type="text/javascript"></script>
 </body>
-
 </html>
