@@ -2255,20 +2255,35 @@ function portal_allow($clientip, $clientmac, $username, $password = null, $attri
 			if ($remaining_time < 0) { // just in case.
 				$remaining_time = 0;
 			}
-
-			/* This user was already logged in so we disconnect the old one */
-			captiveportal_disconnect($cpentry, $radiusservers[$cpentry[11]], 13);
-			captiveportal_logportalauth($cpentry[4], $cpentry[3], $cpentry[2], "CONCURRENT LOGIN - TERMINATING OLD SESSION");
-			$unsetindexes[] = $cpentry[5];
-			break;
+            //only login when previous sission don't active above 3 minutes
+            $lastact = captiveportal_get_last_activity($cpentry[2]);
+            $current = time();
+            if($current - $lastact >= 3 * 60){
+                /* This user was already logged in so we disconnect the old one */
+			    captiveportal_disconnect($cpentry, $radiusservers[$cpentry[11]], 13);
+			    captiveportal_logportalauth($cpentry[4], $cpentry[3], $cpentry[2], "CONCURRENT LOGIN - TERMINATING OLD SESSION");
+			    $unsetindexes[] = $cpentry[5];
+			    break;
+            }else{
+                 return -1;
+            }
+			
 		} elseif ((isset($config['captiveportal'][$cpzone]['noconcurrentlogins'])) && ($username != 'unauthenticated')) {
 			/* on the same username */
 			if (strcasecmp($cpentry[4], $username) == 0) {
-				/* This user was already logged in so we disconnect the old one */
-				captiveportal_disconnect($cpentry, $radiusservers[$cpentry[11]], 13);
-				captiveportal_logportalauth($cpentry[4], $cpentry[3], $cpentry[2], "CONCURRENT LOGIN - TERMINATING OLD SESSION");
-				$unsetindexes[] = $cpentry[5];
-				break;
+                //only login when previous sission don't active above 3 minutes
+                $lastact = captiveportal_get_last_activity($cpentry[2]);
+                $current = time();
+                if($current - $lastact >= 3 * 60){
+                    /* This user was already logged in so we disconnect the old one */
+				    captiveportal_disconnect($cpentry, $radiusservers[$cpentry[11]], 13);
+				    captiveportal_logportalauth($cpentry[4], $cpentry[3], $cpentry[2], "CONCURRENT LOGIN - TERMINATING OLD SESSION");
+				    $unsetindexes[] = $cpentry[5];
+				    break;
+                }else{
+                     //portal_reply_page($redirurl, "error", "Vui long dang xuat hoac cho trong 3 phut moi duoc dang nhap lai");           
+                     return -1;
+                }
 			}
 		}
 	}
