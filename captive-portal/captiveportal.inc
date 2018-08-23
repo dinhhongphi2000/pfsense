@@ -2451,8 +2451,8 @@ function portal_allow($clientip, $clientmac, $username, $password = null, $attri
 	}
 
     //response logout page
-	$htmlraw = file_get_contents("{$g['varetc_path']}/captiveportal-{$cpzone}-logout.html");
-    reply_logout_page($htmlraw, $clientip, $sessionid, $cpzone);
+	/*$htmlraw = file_get_contents("{$g['varetc_path']}/captiveportal-{$cpzone}-logout.html");
+    reply_logout_page($htmlraw, $clientip, $sessionid, $cpzone,);*/
 
 	return $sessionid;
 }
@@ -2635,11 +2635,19 @@ function captiveportal_isip_logged($clientip) {
 	}
 }
 
-function reply_logout_page($htmlraw, $clientip, $clientid, $portalzone){
+function reply_logout_page($htmlraw, $clientip, $clientid, $portalzone,$timecredit){
+    $day = floor($timecredit / 1440);
+    $timecredit = $timecredit % 1440;
+    $hour = floor($timecredit / 60);
+    $timecredit = $timecredit % 60;
+
 	$htmlraw = str_replace("\$CLIENT_IP\$", htmlspecialchars($clientip), $htmlraw);
 	$htmlraw = str_replace("\$CLIENT_ID\$", htmlspecialchars($clientid), $htmlraw);
     $htmlraw = str_replace("\$PORTAL_ZONE\$", htmlspecialchars($portalzone), $htmlraw);
 	$htmlraw = str_replace("\$PORTAL_ACTION\$", "/", $htmlraw);
+    $htmlraw = str_replace("\$DAY_REMAIN\$", htmlspecialchars($day), $htmlraw);
+    $htmlraw = str_replace("\$HOUR_REMAIN\$", htmlspecialchars($hour), $htmlraw);
+    $htmlraw = str_replace("\$MINUTE_REMAIN\$", htmlspecialchars($timecredit), $htmlraw);
 	echo $htmlraw;
 }
 ?>
