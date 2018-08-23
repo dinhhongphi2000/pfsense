@@ -78,10 +78,10 @@ if ((!empty($cpsession)) && (! $_POST['logout_id']) && (!empty($cpcfg['page']['l
 		$attributes['session_timeout'] = $cpsession['session_timeout'];
 	if (!empty($cpsession['session_terminate_time']))
 		$attributes['session_terminate_time'] = $cpsession['session_terminate_time'];
-
-    	//response logout page
+	
+    //response logout page
 	$htmlraw = file_get_contents("{$g['varetc_path']}/captiveportal-{$cpzone}-logout.html");
-    	reply_logout_page($htmlraw, $clientip, $sessionid, $cpzone);
+    reply_logout_page($htmlraw, $clientip, $sessionid, $cpzone,voucher_auth($cpsession[username]));
 	ob_flush();
 	return;
 } else if ($orig_host != $ourhostname) {
@@ -182,6 +182,7 @@ EOD;
         }elseif($loginResult) {
 			// YES: user is good for $timecredit minutes.
 			captiveportal_logportalauth($voucher, $clientmac, $clientip, "Voucher login good for $timecredit min.");
+            header("Refresh:0");
 		} else {
 			portal_reply_page($redirurl, "error", $config['voucher'][$cpzone]['descrmsgexpired'] ? $config['voucher'][$cpzone]['descrmsgexpired']: $errormsg);
 		}
