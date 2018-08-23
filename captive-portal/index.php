@@ -48,8 +48,8 @@ if (empty($cpcfg)) {
 }
 
 $cpzoneid = $cpcfg['zoneid'];
-
 $orig_host = $_SERVER['HTTP_HOST'];
+
 /* NOTE: IE 8/9 is buggy and that is why this is needed */
 $orig_request = trim($_REQUEST['redirurl'], " /");
 $clientip = $_SERVER['REMOTE_ADDR'];
@@ -62,17 +62,6 @@ if (!$clientip) {
 	ob_flush();
 	return;
 }
-/*$query = "WHERE ip = '192.168.15.101'";
-	$cpdb = captiveportal_read_db();
-	foreach ($cpdb as $cpentry) {
-        foreach($cpentry as $key => $value){
-            echo $key . ":" . $value . "<br>";
-        }
-	}
-
-echo captiveportal_get_last_activity("192.168.15.101");
-ob_flush();
-return;*/
 
 $cpsession = captiveportal_isip_logged($clientip);
 $ourhostname = portal_hostname_from_client_ip($clientip);
@@ -90,9 +79,9 @@ if ((!empty($cpsession)) && (! $_POST['logout_id']) && (!empty($cpcfg['page']['l
 	if (!empty($cpsession['session_terminate_time']))
 		$attributes['session_terminate_time'] = $cpsession['session_terminate_time'];
 
-    //response logout page
+    	//response logout page
 	$htmlraw = file_get_contents("{$g['varetc_path']}/captiveportal-{$cpzone}-logout.html");
-    reply_logout_page($htmlraw, $clientip, $sessionid, $cpzone);
+    	reply_logout_page($htmlraw, $clientip, $sessionid, $cpzone);
 	ob_flush();
 	return;
 } else if ($orig_host != $ourhostname) {
@@ -114,6 +103,15 @@ if (!empty($cpcfg['redirurl'])) {
 
 $macfilter = !isset($cpcfg['nomacfilter']);
 $passthrumac = isset($cpcfg['passthrumacadd']);
+$macpassthru = $cpcfg['passthrumac'];
+/*If client mac in passthrumac then don't show login page*/
+foreach($macpassthru as $name => $value){
+	if($value['mac'] == pfSense_ip_to_mac($clientip)['macaddr']){
+		echo "Ban da dang nhap";
+		ob_flush();
+		return;		
+	}
+}
 
 /* find MAC address for client */
 if ($macfilter || $passthrumac) {
@@ -144,21 +142,7 @@ if ($_POST['auth_user2']) {
 }
 
 if ($_POST['logout_id']) {
-	echo <<<EOD
-<html>
-<head><title>Disconnecting...</title></head>
-<body bgcolor="#435370">
-<span style="color: #ffffff; font-family: Tahoma, Verdana, Arial, Helvetica, sans-serif; font-size: 11px;">
-<b>You have been disconnected.</b>
-</span>
-<script type="text/javascript">
-<!--
-setTimeout('window.close();',5000) ;
--->
-</script>
-</body>
-</html>
-
+	portal_reply_page($redirurl, "error", "Ban da dang xuat. Hay dang nhap lai de xu dung mang");
 EOD;
 
 	$safe_logout_id = SQLite3::escapeString($_POST['logout_id']);
@@ -192,10 +176,10 @@ EOD;
 			'voucher' => 1,
 			'session_timeout' => $timecredit*60,
 			'session_terminate_time' => 0);
-		$loginResult = portal_allow($clientip, $clientmac, $voucher, null, $attr); 
-		if($loginResult == -1){
-		    portal_reply_page($redirurl, "error", "Vui long dang xuat hoac cho trong 3 phut moi duoc dang nhap lai");
-		}elseif($loginResult) {
+        $loginResult = portal_allow($clientip, $clientmac, $voucher, null, $attr); 
+        if($loginResult == -1){
+            portal_reply_page($redirurl, "error", "Vui long dang xuat hoac cho trong 3 phut moi duoc dang nhap lai");
+        }elseif($loginResult) {
 			// YES: user is good for $timecredit minutes.
 			captiveportal_logportalauth($voucher, $clientmac, $clientip, "Voucher login good for $timecredit min.");
 		} else {
