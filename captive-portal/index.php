@@ -143,7 +143,7 @@ if ($_POST['auth_user2']) {
 }
 
 if ($_POST['logout_id']) {
-	portal_reply_page($redirurl, "error", "Ban da dang xuat. Hay dang nhap lai de xu dung mang");
+	portal_reply_page($redirurl, "error", "Bạn đã thoát khỏi mạng. Hãy đăng nhập lại để tiếp tục truy cập mạng");
 EOD;
 
 	$safe_logout_id = SQLite3::escapeString($_POST['logout_id']);
@@ -179,7 +179,7 @@ EOD;
 			'session_terminate_time' => 0);
         $loginResult = portal_allow($clientip, $clientmac, $voucher, null, $attr); 
         if($loginResult == -1){
-            portal_reply_page($redirurl, "error", "Vui long dang xuat hoac cho trong 3 phut moi duoc dang nhap lai");
+            portal_reply_page($redirurl, "error", "Vui lòng đăng xuất thiết bị trước. Hoặc chờ trong 3 phút để đăng nhập lại");
         }elseif(isset($loginResult)) {
 			// YES: user is good for $timecredit minutes.
 			captiveportal_logportalauth($voucher, $clientmac, $clientip, "Voucher login good for $timecredit min.");
