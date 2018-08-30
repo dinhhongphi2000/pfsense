@@ -27,6 +27,7 @@ require_once("functions.inc");
 require_once("captiveportal.inc");
 $errormsg = "Invalid credentials specified.";
 
+
 header("Expires: 0");
 header("Cache-Control: no-cache, no-store, must-revalidate");
 header("Pragma: no-cache");
@@ -179,10 +180,11 @@ EOD;
         $loginResult = portal_allow($clientip, $clientmac, $voucher, null, $attr); 
         if($loginResult == -1){
             portal_reply_page($redirurl, "error", "Vui long dang xuat hoac cho trong 3 phut moi duoc dang nhap lai");
-        }elseif($loginResult) {
+        }elseif(isset($loginResult)) {
 			// YES: user is good for $timecredit minutes.
 			captiveportal_logportalauth($voucher, $clientmac, $clientip, "Voucher login good for $timecredit min.");
-            header("Refresh:0");
+            $protocol = (isset($cpcfg['httpslogin'])) ? 'https://' : 'http://';
+            header("Location: {$protocol}{$ourhostname}/index.php?zone={$cpzone}");
 		} else {
 			portal_reply_page($redirurl, "error", $config['voucher'][$cpzone]['descrmsgexpired'] ? $config['voucher'][$cpzone]['descrmsgexpired']: $errormsg);
 		}
