@@ -1032,6 +1032,7 @@ function captiveportal_disconnect($dbent, $radiusservers, $term_cause = 1,
 		 * Delete client's ip entry from tables auth_up and auth_down.
 		 * It's not necessary to explicit specify mac address here
 		 */
+        
 		$cpsession = captiveportal_isip_logged($dbent[2]);
 		if (!empty($cpsession)) {
 			$clientsn = (is_ipaddrv6($dbent[2])) ? 128 : 32;
@@ -1086,24 +1087,16 @@ function captiveportal_disconnect($dbent, $radiusservers, $term_cause = 1,
 /* remove a single client by sessionid */
 function captiveportal_disconnect_client($sessionid, $term_cause = 1, $logoutReason = "LOGOUT") {
 	global $g, $config;
-
 	$sessionid = SQLite3::escapeString($sessionid);
-	$radiusservers = captiveportal_get_radius_servers();
-
 	/* read database */
 	$result = captiveportal_read_db("WHERE sessionid = '{$sessionid}'");
-
 	/* find entry */
 	if (!empty($result)) {
-		captiveportal_write_db("DELETE FROM captiveportal WHERE sessionid = '{$sessionid}'");
-
 		foreach ($result as $cpentry) {
-			if (empty($cpentry[11])) {
-				$cpentry[11] = 'first';
-			}
-			captiveportal_disconnect($cpentry, $radiusservers[$cpentry[11]], $term_cause);
+			captiveportal_disconnect($cpentry, $term_cause);
 			captiveportal_logportalauth($cpentry[4], $cpentry[3], $cpentry[2], "DISCONNECT");
 		}
+		captiveportal_remove_entries(array($sessionid));
 		unset($result);
 	}
 }
@@ -2287,7 +2280,6 @@ function portal_allow($clientip, $clientmac, $username, $password = null, $attri
 			}
 		}
 	}
-	unset($cpdb);
 
 	if (!empty($unsetindexes)) {
 		captiveportal_remove_entries($unsetindexes);
@@ -2377,6 +2369,7 @@ function portal_allow($clientip, $clientmac, $username, $password = null, $attri
 			if (!isset($config['captiveportal'][$cpzone]['nomacfilter'])) {
 				$rule_entry .= ",{$clientmac}";
 			}
+
 			$_gb = @pfSense_ipfw_table("{$cpzone}_auth_up", IP_FW_TABLE_XADD, "{$rule_entry}", $bw_up_pipeno);
 			$_gb = @pfSense_ipfw_table("{$cpzone}_auth_down", IP_FW_TABLE_XADD, "{$rule_entry}", $bw_down_pipeno);
 
@@ -2453,7 +2446,6 @@ function portal_allow($clientip, $clientmac, $username, $password = null, $attri
     //response logout page
 	/*$htmlraw = file_get_contents("{$g['varetc_path']}/captiveportal-{$cpzone}-logout.html");
     reply_logout_page($htmlraw, $clientip, $sessionid, $cpzone,);*/
-
 	return $sessionid;
 }
 
