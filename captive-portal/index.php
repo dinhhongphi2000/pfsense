@@ -37,7 +37,7 @@ global $cpzone, $cpzoneid;
 
 $cpzone = strtolower($_REQUEST['zone']);
 if(empty($cpzone)){
-    $cpzone = "hongphi";
+    $cpzone = "nhatro_daomanhhong";
 }
 $cpcfg = $config['captiveportal'][$cpzone];
 
