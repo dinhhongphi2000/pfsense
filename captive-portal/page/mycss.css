@@ -1,0 +1,52 @@
+body {
+    background-image: url(980b2b1a28582ea95b878fce_rw_1920.jpg);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    color: white;
+}
+
+.card {
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+input {
+    background: transparent !important;
+    border-top : none !important;
+    border-right : none !important;
+    border-left : none !important;
+    border-bottom: 1px solid white;
+    color: white !important;
+}
+
+input:focus, input:active, input:hover {
+    border-bottom: 2px solid white !important;
+    outline: none !important;
+    box-shadow: none !important;
+    
+}
+
+input::placeholder{
+    color: white !important;
+}
+
+input[type="submit"] {
+    background-color : #2a8a85 !important;
+    border-bottom: none !important;
+    float: right;
+    clear: right;
+}
+
+#groupLoginAccount {
+    display: none;
+}
+
+.btnChangeLoginMethod {
+    cursor: pointer;
+    float: right;
+}
+
+hr{
+    background-color: white;
+}
